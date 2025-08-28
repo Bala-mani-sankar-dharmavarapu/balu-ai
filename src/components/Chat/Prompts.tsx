@@ -4,18 +4,16 @@ import { Star, Bolt, Favorite } from "@mui/icons-material";
 const cards = [
   {
     icon: <Star fontSize="large" />,
-    title: "Achievement",
-    desc: "Unlock new milestones",
+    title: "Achievements",
   },
   {
     icon: <Bolt fontSize="large" />,
-    title: "Speed",
-    desc: "Boost your performance",
+    title: "Highlights",
   },
   {
     icon: <Favorite fontSize="large" />,
-    title: "Love",
-    desc: "Care for what matters",
+    title: "Roadmap",
+    // desc: "Care for what matters",
   },
 ];
 
@@ -28,7 +26,7 @@ const Prompts = ({ sendMessage }: Props) => {
       {cards.map((card, index) => (
         <Grid item xs={12} sm={6} md={4} key={index}>
           <Box
-            onClick={() => sendMessage(card.desc)}
+            onClick={() => sendMessage(card.title)}
             sx={{
               p: 2.5,
               borderRadius: "20px",
@@ -70,7 +68,7 @@ const Prompts = ({ sendMessage }: Props) => {
             <Typography variant="h6" fontWeight="bold">
               {card.title}
             </Typography>
-            <Typography variant="body2">{card.desc}</Typography>
+            {/* <Typography variant="body2">{card.desc}</Typography> */}
           </Box>
         </Grid>
       ))}
