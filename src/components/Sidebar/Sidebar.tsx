@@ -10,15 +10,16 @@ import {
 } from "@mui/material";
 import { Explore, Collections, History } from "@mui/icons-material";
 import Logo from "../../assets/logo_128x128.png";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const drawerWidth = 200;
 
 const navigationItems = [
-  { text: "Chat Agent", icon: <Explore /> },
-  { text: "RCS Agent", icon: <History /> },
-  { text: "Central OE Platform", icon: <Collections /> },
-  { text: "WBR Monitoring", icon: <History /> },
-  { text: "Kale Review", icon: <History /> },
+  { text: "Chat Agent", icon: <Explore />, path: "/" },
+  { text: "RCS Agent", icon: <History />, path: "/rcs-agent" },
+  { text: "Central OE", icon: <Collections />, path: "/central-oe-platform" },
+  { text: "WBR Monitoring", icon: <History />, path: "/wbr-monitoring" },
+  { text: "Kale Review", icon: <History />, path: "/kale-review" },
 ];
 
 interface SidebarProps {
@@ -26,6 +27,9 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <Drawer
       variant="permanent"
@@ -88,6 +92,8 @@ const Sidebar: React.FC<SidebarProps> = () => {
         {navigationItems.map((item) => (
           <ListItem key={item.text} disablePadding>
             <ListItemButton
+              onClick={() => navigate(item.path)}
+              selected={location.pathname === item.path}
               sx={{
                 borderRadius: 2,
                 transition: "all 0.3s ease",

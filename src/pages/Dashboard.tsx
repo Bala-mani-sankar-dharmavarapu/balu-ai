@@ -2,6 +2,11 @@ import React from "react";
 import { Box, Paper } from "@mui/material";
 import Sidebar from "../components/Sidebar/Sidebar";
 import ChatSection from "../components/Chat/ChatSection";
+import { Routes, Route, Navigate } from "react-router-dom";
+import RCSAgent from "./RCSAgent";
+import CentralOEPlatform from "./CentralOEPlatform";
+import WBRJobMonitoring from "./WBRJobMonitoring";
+import KaleReview from "./KaleReview";
 
 const Dashboard: React.FC = () => {
   return (
@@ -29,7 +34,14 @@ const Dashboard: React.FC = () => {
           borderRadius: 2.5,
         }}
       >
-        <ChatSection />
+        <Routes>
+          <Route path="/" element={<ChatSection />} />
+          <Route path="/rcs-agent" element={<RCSAgent />} />
+          <Route path="/central-oe-platform" element={<CentralOEPlatform />} />
+          <Route path="/wbr-monitoring" element={<WBRJobMonitoring />} />
+          <Route path="/kale-review" element={<KaleReview />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Paper>
     </Box>
   );

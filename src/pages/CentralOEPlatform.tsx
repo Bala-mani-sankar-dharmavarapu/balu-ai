@@ -1,5 +1,11 @@
+import { Box } from "@mui/material";
+
 const CentralOEPlatform = () => {
-  return <div>Central OE Platform</div>;
+  return (
+    <Box sx={{ p: 3, textAlign: "center", fontSize: "1.5rem" }}>
+      Central OE Platform
+    </Box>
+  );
 };
 
 export default CentralOEPlatform;

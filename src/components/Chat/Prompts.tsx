@@ -1,34 +1,46 @@
 import { Box, Grid, Typography } from "@mui/material";
-import { Star, Bolt, Favorite } from "@mui/icons-material";
+import { EmojiEvents, FlashOn } from "@mui/icons-material"; // MUI icons
+import { TbSitemap } from "react-icons/tb";
 
 const cards = [
   {
-    icon: <Star fontSize="large" />,
+    icon: <EmojiEvents fontSize="inherit" />, // Trophy for Achievements
     title: "Achievements",
   },
   {
-    icon: <Bolt fontSize="large" />,
+    icon: <FlashOn fontSize="inherit" />, // Lightning for Highlights
     title: "Highlights",
   },
   {
-    icon: <Favorite fontSize="large" />,
+    icon: <TbSitemap fontSize="inherit" />, // Road for Roadmap
     title: "Roadmap",
-    // desc: "Care for what matters",
   },
 ];
 
 interface Props {
   sendMessage: (prompt?: string) => void;
 }
+
 const Prompts = ({ sendMessage }: Props) => {
   return (
     <Grid container spacing={3} justifyContent="center">
       {cards.map((card, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+          key={index}
+          display="flex"
+          justifyContent="center"
+        >
           <Box
             onClick={() => sendMessage(card.title)}
             sx={{
-              p: 2.5,
+              width: "100%", // full width inside grid
+              maxWidth: 260, // consistent width for all
+              minWidth: 220, // prevents shrinking too much
+              p: 2,
               borderRadius: "20px",
               textAlign: "center",
               color: "#fff",
@@ -37,6 +49,12 @@ const Prompts = ({ sendMessage }: Props) => {
               background: "rgba(255, 255, 255, 0.1)",
               backdropFilter: "blur(12px)",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease",
+              "&:hover": {
+                transform: "translateY(-4px)",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
+              },
               "&::before": {
                 content: '""',
                 position: "absolute",
@@ -54,10 +72,11 @@ const Prompts = ({ sendMessage }: Props) => {
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: 60,
-                height: 60,
+                width: 55,
+                height: 55,
                 borderRadius: "50%",
                 mb: 2,
+                fontSize: "2rem", // uniform size across MUI + react-icons
                 background:
                   "linear-gradient(135deg, #bb3187, #e68185, #f55c4b)",
                 boxShadow: "0 0 25px rgba(241, 91, 91, 0.6)",
@@ -68,7 +87,6 @@ const Prompts = ({ sendMessage }: Props) => {
             <Typography variant="h6" fontWeight="bold">
               {card.title}
             </Typography>
-            {/* <Typography variant="body2">{card.desc}</Typography> */}
           </Box>
         </Grid>
       ))}

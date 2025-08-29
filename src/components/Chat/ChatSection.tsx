@@ -85,7 +85,7 @@ const ChatSection: React.FC = () => {
           </Typography>
           <Typography
             variant="h2"
-            sx={{ color: "#9e9e9e", fontWeight: 500, mb: 4 }}
+            sx={{ color: "#9e9e9e", fontWeight: 500, mb: 6.5 }}
           >
             How can I help you today?
           </Typography>
