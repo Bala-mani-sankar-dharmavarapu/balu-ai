@@ -1,9 +1,11 @@
+import React from "react";
 import { Box } from "@mui/material";
+import WBRJobMonitoringDashboard from "../components/WBRJobMonitoring/WBRJobMonitoringDashboard";
 
 const WBRJobMonitoring = () => {
   return (
-    <Box sx={{ p: 3, textAlign: "center", fontSize: "1.5rem" }}>
-      WBR Job Monitoring
+    <Box sx={{ height: "100%", width: "100%" }}>
+      <WBRJobMonitoringDashboard />
     </Box>
   );
 };

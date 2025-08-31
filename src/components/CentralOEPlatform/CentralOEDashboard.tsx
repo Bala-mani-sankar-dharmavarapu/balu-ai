@@ -342,6 +342,7 @@ const CentralOEDashboard: React.FC = () => {
             border: `1px solid ${theme.palette.divider}`,
             backdropFilter: "blur(10px)",
             mb: 2,
+            overflow: "hidden",
           }}
         >
           <Tabs
@@ -354,15 +355,18 @@ const CentralOEDashboard: React.FC = () => {
                 fontSize: "0.95rem",
                 minHeight: 48,
                 color: theme.palette.text.secondary,
+                border: "none",
                 "&.Mui-selected": {
                   color: theme.palette.primary.main,
                   background: `linear-gradient(135deg, ${theme.palette.primary.main}08, ${theme.palette.primary.main}12)`,
+                  borderBottom: `3px solid ${theme.palette.primary.main}`,
+                },
+                "&:hover": {
+                  backgroundColor: theme.palette.action.hover,
                 },
               },
               "& .MuiTabs-indicator": {
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                height: 3,
-                borderRadius: "3px 3px 0 0",
+                display: "none",
               },
             }}
           >
