@@ -1,11 +1,14 @@
+import { ThemeProvider } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+import { theme } from "./theme/theme";
 import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
-    <div style={{ fontFamily: "Inter, sans-serif" }}>
-      {/* <HeaderText /> */}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Dashboard />
-    </div>
+    </ThemeProvider>
   );
 }
 

@@ -1,9 +1,7 @@
-import { Box } from "@mui/material";
+import RCSChat from "../components/RCSChat/RCSChat";
 
 const RCSAgent = () => {
-  return (
-    <Box sx={{ p: 3, textAlign: "center", fontSize: "1.5rem" }}>RCS Agent</Box>
-  );
+  return <RCSChat />;
 };
 
 export default RCSAgent;

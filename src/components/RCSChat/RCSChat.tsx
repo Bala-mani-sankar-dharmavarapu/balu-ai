@@ -9,8 +9,8 @@ import {
   Fade,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import Chat from "./Chat";
 import { v4 as uuidv4 } from "uuid";
+import Chat from "../Chat/Chat";
 import QueryList from "../common/QueryList";
 
 interface Message {
@@ -20,7 +20,7 @@ interface Message {
   time: string;
 }
 
-const ChatSection: React.FC = () => {
+const RCSChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -112,50 +112,19 @@ const ChatSection: React.FC = () => {
                 lineHeight: 1.4,
               }}
             >
-              I'm your AI assistant. How can I help you today?
+              I'm your RCS assistant. How can I help you today?
             </Typography>
 
+            {/* RCS Query Functionalities Section */}
+            <QueryList setInput={setInput} />
             {/* Quick Prompts */}
-            <QueryList
-              setInput={sendMessage}
-              title="Quick Starters"
-              functions={[
-                {
-                  id: "general-help",
-                  title: "General Help",
-                  description: "Get help with general questions and tasks",
-                  example: "How can you help me today?",
-                  icon: "🤖",
-                  color: "primary",
-                  query: "How can you help me today?",
-                },
-                {
-                  id: "data-analysis",
-                  title: "Data Analysis",
-                  description: "Analyze data and create visualizations",
-                  example: "Help me analyze this dataset",
-                  icon: "📈",
-                  color: "secondary",
-                  query: "Help me analyze this dataset",
-                },
-                {
-                  id: "code-assistance",
-                  title: "Code Assistance",
-                  description: "Get help with programming and debugging",
-                  example: "Help me debug this code",
-                  icon: "💻",
-                  color: "info",
-                  query: "Help me debug this code",
-                },
-              ]}
-              cardWidth={140}
-            />
+            {/* <Prompts sendMessage={sendMessage} /> */}
           </Box>
         </Fade>
       )}
 
       {/* Chat messages */}
-      <Box sx={{ flexGrow: 1, overflow: "auto" }}>
+      <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
         <Chat messages={messages} loading={loading} />
       </Box>
 
@@ -269,4 +238,4 @@ const ChatSection: React.FC = () => {
   );
 };
 
-export default ChatSection;
+export default RCSChat;
