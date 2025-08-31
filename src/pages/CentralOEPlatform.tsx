@@ -1,9 +1,11 @@
+import React from "react";
 import { Box } from "@mui/material";
+import CentralOEDashboard from "../components/CentralOEPlatform/CentralOEDashboard";
 
 const CentralOEPlatform = () => {
   return (
-    <Box sx={{ p: 3, textAlign: "center", fontSize: "1.5rem" }}>
-      Central OE Platform
+    <Box sx={{ height: "100%", width: "100%" }}>
+      <CentralOEDashboard />
     </Box>
   );
 };
