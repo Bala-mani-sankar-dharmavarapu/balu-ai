@@ -1,11 +1,7 @@
-import { Box } from "@mui/material";
+import KaleReviewDashboard from "../components/KaleReview/KaleReviewDashboard";
 
 const KaleReview = () => {
-  return (
-    <Box sx={{ p: 3, textAlign: "center", fontSize: "1.5rem" }}>
-      Kale Review
-    </Box>
-  );
+  return <KaleReviewDashboard />;
 };
 
 export default KaleReview;

@@ -25,7 +25,6 @@ const WBRJobMonitoringDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sourceTableData, setSourceTableData] = useState<SourceTableData[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>("");
   const theme = useTheme();
 
   useEffect(() => {
@@ -39,8 +38,8 @@ const WBRJobMonitoringDashboard: React.FC = () => {
         // Mock data based on the image
         const mockData: SourceTableData[] = [
           {
-            id: "action-spot",
-            name: "Action SPOT",
+            id: "table-001",
+            name: "customer_data",
             statuses: {
               "8/6/25": "success",
               "8/7/25": "success",
@@ -55,8 +54,8 @@ const WBRJobMonitoringDashboard: React.FC = () => {
             },
           },
           {
-            id: "order-spot",
-            name: "Order SPOT",
+            id: "table-002",
+            name: "order_records",
             statuses: {
               "8/6/25": "success",
               "8/7/25": "success",
@@ -71,8 +70,8 @@ const WBRJobMonitoringDashboard: React.FC = () => {
             },
           },
           {
-            id: "customer-spot",
-            name: "Customer SPOT",
+            id: "table-003",
+            name: "product_inventory",
             statuses: {
               "8/6/25": "success",
               "8/7/25": "success",
@@ -87,8 +86,8 @@ const WBRJobMonitoringDashboard: React.FC = () => {
             },
           },
           {
-            id: "d-cb-details",
-            name: "d_cb_details",
+            id: "table-004",
+            name: "payment_transactions",
             statuses: {
               "8/6/25": "success",
               "8/7/25": "success",
@@ -103,8 +102,8 @@ const WBRJobMonitoringDashboard: React.FC = () => {
             },
           },
           {
-            id: "table-y",
-            name: "Table Y",
+            id: "table-005",
+            name: "user_sessions",
             statuses: {
               "8/6/25": "success",
               "8/7/25": "success",
@@ -119,8 +118,8 @@ const WBRJobMonitoringDashboard: React.FC = () => {
             },
           },
           {
-            id: "table-z",
-            name: "Table Z",
+            id: "table-006",
+            name: "analytics_events",
             statuses: {
               "8/6/25": "success",
               "8/7/25": "success",

@@ -249,21 +249,15 @@ const Sidebar: React.FC<SidebarProps> = () => {
       {/* Footer */}
       <Box
         sx={{
-          p: 1.5,
-          borderTop: `1px solid ${theme.palette.divider}`,
-          backgroundColor: theme.palette.background.default,
+          mt: "auto",
+          p: 2,
+          textAlign: "center",
+          borderTop: "1px solid",
+          borderColor: "divider",
         }}
       >
-        <Typography
-          variant="caption"
-          sx={{
-            color: theme.palette.text.secondary,
-            textAlign: "center",
-            display: "block",
-            fontSize: "0.7rem",
-          }}
-        >
-          Version 2.1.0 • AI-Powered
+        <Typography variant="caption" color="text.secondary">
+          Powered by Enterprise Platform
         </Typography>
       </Box>
     </Drawer>

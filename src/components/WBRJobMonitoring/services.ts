@@ -15,7 +15,7 @@ export interface SourceTableRequest {
 
 export class WBRJobMonitoringService {
   static async getSourceTableData(
-    request: SourceTableRequest
+    _request: SourceTableRequest
   ): Promise<ApiResponse<SourceTableData[]>> {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -23,8 +23,8 @@ export class WBRJobMonitoringService {
     // Mock data based on the image
     const mockData: SourceTableData[] = [
       {
-        id: "action-spot",
-        name: "Action SPOT",
+        id: "table-001",
+        name: "customer_data",
         statuses: {
           "8/6/25": "success",
           "8/7/25": "success",
@@ -39,8 +39,8 @@ export class WBRJobMonitoringService {
         },
       },
       {
-        id: "order-spot",
-        name: "Order SPOT",
+        id: "table-002",
+        name: "order_records",
         statuses: {
           "8/6/25": "success",
           "8/7/25": "success",
@@ -55,8 +55,8 @@ export class WBRJobMonitoringService {
         },
       },
       {
-        id: "customer-spot",
-        name: "Customer SPOT",
+        id: "table-003",
+        name: "product_inventory",
         statuses: {
           "8/6/25": "success",
           "8/7/25": "success",
@@ -71,8 +71,8 @@ export class WBRJobMonitoringService {
         },
       },
       {
-        id: "d-cb-details",
-        name: "d_cb_details",
+        id: "table-004",
+        name: "payment_transactions",
         statuses: {
           "8/6/25": "success",
           "8/7/25": "success",
@@ -87,8 +87,8 @@ export class WBRJobMonitoringService {
         },
       },
       {
-        id: "table-y",
-        name: "Table Y",
+        id: "table-005",
+        name: "user_sessions",
         statuses: {
           "8/6/25": "success",
           "8/7/25": "success",
@@ -103,8 +103,8 @@ export class WBRJobMonitoringService {
         },
       },
       {
-        id: "table-z",
-        name: "Table Z",
+        id: "table-006",
+        name: "analytics_events",
         statuses: {
           "8/6/25": "success",
           "8/7/25": "success",
@@ -129,7 +129,7 @@ export class WBRJobMonitoringService {
   }
 
   static async downloadReport(
-    request: SourceTableRequest
+    _request: SourceTableRequest
   ): Promise<ApiResponse<string>> {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));

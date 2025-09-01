@@ -11,19 +11,31 @@ body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  min-height: 100vh;
   margin: 0;
   padding: 0;
   color: #0f1111;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 #root {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Remove focus outlines from Material-UI components */
+.MuiAutocomplete-input:focus,
+.MuiInputBase-input:focus,
+.MuiOutlinedInput-root.Mui-focused,
+.MuiInputBase-root.Mui-focused,
+.MuiFormControl-root.Mui-focused {
+  outline: none !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  outline: none !important;
 }
 
 h1 {

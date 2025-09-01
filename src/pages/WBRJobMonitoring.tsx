@@ -1,6 +1,5 @@
-import React from "react";
-import { Box } from "@mui/material";
 import WBRJobMonitoringDashboard from "../components/WBRJobMonitoring/WBRJobMonitoringDashboard";
+import { Box } from "@mui/material";
 
 const WBRJobMonitoring = () => {
   return (

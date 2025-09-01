@@ -1,213 +1,95 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  useTheme,
-  Fade,
-  CircularProgress,
-  Alert,
-  Chip,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import DownloadIcon from "@mui/icons-material/Download";
-import type { SourceTableData, TableStatus } from "./types";
+import { Box, useTheme, Fade, CircularProgress, Alert } from "@mui/material";
+import type { Application, TableInfo, TargetSystem } from "./types";
+import { KaleReviewService } from "./services";
+import SearchSection from "./SearchSection";
+import TableInformationSection from "./TableInformationSection";
+import TargetSystemsSection from "./TargetSystemsSection";
 
 const KaleReviewDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sourceTableData, setSourceTableData] = useState<SourceTableData[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [targetSystems, setTargetSystems] = useState<TargetSystem[]>([]);
+  const [selectedApplication, setSelectedApplication] =
+    useState<Application | null>(null);
+  const [tableInfo, setTableInfo] = useState<TableInfo[]>([]);
+  const [overallStatus, setOverallStatus] = useState({
+    completed: 0,
+    total: 0,
+  });
   const theme = useTheme();
 
   useEffect(() => {
-    // Simulate API call
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // Mock data based on the image
-        const mockData: SourceTableData[] = [
-          {
-            id: "action-spot",
-            name: "Action SPOT",
-            statuses: {
-              "8/6/25": "success",
-              "8/7/25": "success",
-              "8/8/25": "success",
-              "8/9/25": "success",
-              "8/10/25": "success",
-              "8/11/25": "success",
-              "8/12/25": "wfr",
-              "8/13/25": "wfr",
-              "8/14/25": "wfd",
-              "8/15/25": "wfd",
-            },
-          },
-          {
-            id: "order-spot",
-            name: "Order SPOT",
-            statuses: {
-              "8/6/25": "success",
-              "8/7/25": "success",
-              "8/8/25": "success",
-              "8/9/25": "success",
-              "8/10/25": "success",
-              "8/11/25": "success",
-              "8/12/25": "wfr",
-              "8/13/25": "wfr",
-              "8/14/25": "wfd",
-              "8/15/25": "wfd",
-            },
-          },
-          {
-            id: "customer-spot",
-            name: "Customer SPOT",
-            statuses: {
-              "8/6/25": "success",
-              "8/7/25": "success",
-              "8/8/25": "success",
-              "8/9/25": "success",
-              "8/10/25": "success",
-              "8/11/25": "success",
-              "8/12/25": "wfr",
-              "8/13/25": "wfr",
-              "8/14/25": "wfd",
-              "8/15/25": "wfd",
-            },
-          },
-          {
-            id: "d-cb-details",
-            name: "d_cb_details",
-            statuses: {
-              "8/6/25": "success",
-              "8/7/25": "success",
-              "8/8/25": "wfr",
-              "8/9/25": "wfd",
-              "8/10/25": "wfd",
-              "8/11/25": "wfd",
-              "8/12/25": "wfd",
-              "8/13/25": "wfd",
-              "8/14/25": "wfd",
-              "8/15/25": "wfd",
-            },
-          },
-          {
-            id: "table-y",
-            name: "Table Y",
-            statuses: {
-              "8/6/25": "success",
-              "8/7/25": "success",
-              "8/8/25": "wfr",
-              "8/9/25": "wfd",
-              "8/10/25": "wfd",
-              "8/11/25": "wfd",
-              "8/12/25": "wfd",
-              "8/13/25": "wfd",
-              "8/14/25": "wfd",
-              "8/15/25": "wfd",
-            },
-          },
-          {
-            id: "table-z",
-            name: "Table Z",
-            statuses: {
-              "8/6/25": "success",
-              "8/7/25": "success",
-              "8/8/25": "wfr",
-              "8/9/25": "wfd",
-              "8/10/25": "wfd",
-              "8/11/25": "wfd",
-              "8/12/25": "wfd",
-              "8/13/25": "wfd",
-              "8/14/25": "wfd",
-              "8/15/25": "wfd",
-            },
-          },
-        ];
-
-        setSourceTableData(mockData);
-        setError(null);
-      } catch {
-        setError("Failed to load source table data. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchInitialData();
   }, []);
 
-  const getStatusColor = (status: TableStatus) => {
+  const fetchInitialData = async () => {
+    try {
+      setLoading(true);
+      const [appsResponse, targetsResponse, statusResponse] = await Promise.all(
+        [
+          KaleReviewService.getApplications(),
+          KaleReviewService.getTargetSystems(),
+          KaleReviewService.getOverallStatus(),
+        ]
+      );
+
+      if (
+        appsResponse.success &&
+        targetsResponse.success &&
+        statusResponse.success
+      ) {
+        setApplications(appsResponse.data);
+        setTargetSystems(targetsResponse.data);
+        setOverallStatus(statusResponse.data);
+        setError(null);
+      } else {
+        setError("Failed to load data. Please try again.");
+      }
+    } catch {
+      setError("An error occurred while loading data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApplicationSelect = async (application: Application) => {
+    setSelectedApplication(application);
+    try {
+      const response = await KaleReviewService.getTableInfo();
+      if (response.success) {
+        setTableInfo(response.data);
+      }
+    } catch {
+      console.error("Failed to fetch table info");
+    }
+  };
+
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case "success":
+      case "Usage found":
         return theme.palette.success.main;
-      case "wfr":
-        return theme.palette.warning.main;
-      case "wfd":
+      case "Usage not found":
         return theme.palette.error.main;
+      case "Valid":
+        return theme.palette.info.main;
       default:
         return theme.palette.grey[500];
     }
   };
 
-  const getStatusBackground = (status: TableStatus) => {
+  const getStatusBackground = (status: string) => {
     switch (status) {
-      case "success":
+      case "Usage found":
         return theme.palette.success.main + "15";
-      case "wfr":
-        return theme.palette.warning.main + "15";
-      case "wfd":
+      case "Usage not found":
         return theme.palette.error.main + "15";
+      case "Valid":
+        return theme.palette.info.main + "15";
       default:
         return theme.palette.grey[500] + "15";
     }
-  };
-
-  const getStatusText = (status: TableStatus) => {
-    switch (status) {
-      case "success":
-        return "Success";
-      case "wfr":
-        return "WFR";
-      case "wfd":
-        return "WFD";
-      default:
-        return "Unknown";
-    }
-  };
-
-  const dates = [
-    "8/6/25",
-    "8/7/25",
-    "8/8/25",
-    "8/9/25",
-    "8/10/25",
-    "8/11/25",
-    "8/12/25",
-    "8/13/25",
-    "8/14/25",
-    "8/15/25",
-  ];
-
-  const handleRefresh = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 1000);
-  };
-
-  const handleDownload = () => {
-    // Handle download logic
-    console.log("Downloading data...");
   };
 
   if (loading) {
@@ -218,7 +100,6 @@ const KaleReviewDashboard: React.FC = () => {
           justifyContent: "center",
           alignItems: "center",
           height: "100%",
-          minHeight: "400px",
         }}
       >
         <CircularProgress size={60} />
@@ -232,273 +113,61 @@ const KaleReviewDashboard: React.FC = () => {
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
+        <Alert
+          severity="info"
+          onClick={fetchInitialData}
+          sx={{ cursor: "pointer" }}
+        >
+          Click here to retry
+        </Alert>
       </Box>
     );
   }
 
   return (
     <Fade in={true} timeout={800}>
-      <Box sx={{ p: { xs: 1.5, md: 2 }, height: "100%", overflow: "hidden" }}>
-        {/* Header Section */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: { xs: 1.5, md: 2 },
-            mb: 2,
-            borderRadius: 2,
-            background: `linear-gradient(135deg, ${theme.palette.primary.main}08, ${theme.palette.secondary.main}12)`,
-            border: `1px solid ${theme.palette.divider}`,
-            backdropFilter: "blur(10px)",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 2,
-            }}
-          >
-            {/* Title Section */}
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 700,
-                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  mb: 0.5,
-                  fontSize: { xs: "1.25rem", md: "1.5rem" },
-                }}
-              >
-                Payment Risk Analytics WBR Pipeline Monitor
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: theme.palette.text.secondary,
-                  fontSize: "0.9rem",
-                  fontWeight: 500,
-                }}
-              >
-                Source Table Status
-              </Typography>
-            </Box>
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: theme.palette.background.default,
+          overflow: "hidden",
+        }}
+      >
+        {/* Search Section with Overall Status */}
+        <Box sx={{ p: 2, pb: 1 }}>
+          <SearchSection
+            applications={applications}
+            selectedApplication={selectedApplication}
+            onApplicationSelect={handleApplicationSelect}
+            overallStatus={overallStatus}
+          />
+        </Box>
 
-            {/* Action Buttons */}
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <Tooltip title="Refresh data" arrow>
-                <IconButton
-                  onClick={handleRefresh}
-                  sx={{
-                    backgroundColor: theme.palette.background.default,
-                    border: `1px solid ${theme.palette.divider}`,
-                    "&:hover": {
-                      backgroundColor: theme.palette.action.hover,
-                    },
-                  }}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Download report" arrow>
-                <IconButton
-                  onClick={handleDownload}
-                  sx={{
-                    backgroundColor: theme.palette.background.default,
-                    border: `1px solid ${theme.palette.divider}`,
-                    "&:hover": {
-                      backgroundColor: theme.palette.action.hover,
-                    },
-                  }}
-                >
-                  <DownloadIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Box>
-        </Paper>
-
-        {/* Status Legend */}
-        <Paper
-          elevation={0}
+        {/* Main Content - Table Info and Target Systems */}
+        <Box
           sx={{
-            p: 1.5,
-            mb: 2,
-            borderRadius: 2,
-            background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.background.default})`,
-            border: `1px solid ${theme.palette.divider}`,
-            backdropFilter: "blur(10px)",
-          }}
-        >
-          <Typography
-            variant="subtitle2"
-            sx={{
-              fontWeight: 600,
-              mb: 1,
-              color: theme.palette.text.primary,
-            }}
-          >
-            Status Legend
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box
-                sx={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 1,
-                  backgroundColor: theme.palette.success.main + "15",
-                  border: `2px solid ${theme.palette.success.main}`,
-                }}
-              />
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                Success
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box
-                sx={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 1,
-                  backgroundColor: theme.palette.warning.main + "15",
-                  border: `2px solid ${theme.palette.warning.main}`,
-                }}
-              />
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                WFR (Wait for Review)
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box
-                sx={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 1,
-                  backgroundColor: theme.palette.error.main + "15",
-                  border: `2px solid ${theme.palette.error.main}`,
-                }}
-              />
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                WFD (Wait for Data)
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-
-        {/* Data Table */}
-        <Paper
-          elevation={0}
-          sx={{
-            borderRadius: 2,
-            background: `linear-gradient(135deg, ${theme.palette.background.paper}, ${theme.palette.background.default})`,
-            border: `1px solid ${theme.palette.divider}`,
-            backdropFilter: "blur(10px)",
+            flex: 1,
+            display: "flex",
+            gap: 2,
+            px: 2,
+            pb: 2,
+            minHeight: 0,
             overflow: "hidden",
           }}
         >
-          <TableContainer
-            sx={{ maxHeight: "calc(100vh - 300px)", overflow: "auto" }}
-          >
-            <Table stickyHeader sx={{ minWidth: 800 }}>
-              <TableHead>
-                <TableRow
-                  sx={{
-                    backgroundColor: theme.palette.background.default,
-                    "& th": {
-                      borderBottom: `2px solid ${theme.palette.divider}`,
-                      fontWeight: 700,
-                      fontSize: "0.75rem",
-                      color: theme.palette.text.secondary,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
-                      py: 1,
-                      backgroundColor: theme.palette.background.default,
-                    },
-                  }}
-                >
-                  <TableCell
-                    sx={{
-                      position: "sticky",
-                      left: 0,
-                      backgroundColor: theme.palette.background.default,
-                      zIndex: 1,
-                      minWidth: 150,
-                    }}
-                  >
-                    Source Table
-                  </TableCell>
-                  {dates.map((date) => (
-                    <TableCell
-                      key={date}
-                      align="center"
-                      sx={{
-                        minWidth: 80,
-                        fontSize: "0.7rem",
-                      }}
-                    >
-                      {date}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {sourceTableData.map((table) => (
-                  <TableRow
-                    key={table.id}
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: theme.palette.action.hover,
-                      },
-                      "&:last-child td": {
-                        borderBottom: 0,
-                      },
-                      transition: "all 0.2s ease-in-out",
-                    }}
-                  >
-                    <TableCell
-                      sx={{
-                        position: "sticky",
-                        left: 0,
-                        backgroundColor: theme.palette.background.paper,
-                        zIndex: 1,
-                        fontWeight: 600,
-                        fontSize: "0.8rem",
-                        borderRight: `1px solid ${theme.palette.divider}`,
-                      }}
-                    >
-                      {table.name}
-                    </TableCell>
-                    {dates.map((date) => (
-                      <TableCell key={date} align="center" sx={{ py: 1 }}>
-                        <Chip
-                          label={getStatusText(table.statuses[date])}
-                          size="small"
-                          sx={{
-                            backgroundColor: getStatusBackground(
-                              table.statuses[date]
-                            ),
-                            color: getStatusColor(table.statuses[date]),
-                            fontWeight: 600,
-                            fontSize: "0.65rem",
-                            borderRadius: 1,
-                            minWidth: 50,
-                            border: `1px solid ${getStatusColor(
-                              table.statuses[date]
-                            )}30`,
-                          }}
-                        />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+          {/* Table Information Section */}
+          <TableInformationSection
+            selectedApplication={selectedApplication}
+            tableInfo={tableInfo}
+            getStatusColor={getStatusColor}
+            getStatusBackground={getStatusBackground}
+          />
+
+          {/* Target Systems Section */}
+          <TargetSystemsSection targetSystems={targetSystems} />
+        </Box>
       </Box>
     </Fade>
   );

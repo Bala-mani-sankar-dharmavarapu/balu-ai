@@ -47,27 +47,35 @@ class CentralOEService {
       ...(request.filters && { filters: JSON.stringify(request.filters) }),
     });
 
-    return this.makeRequest<RiskData[]>(`/api/risks?${queryParams}`);
+    const response = await this.makeRequest<RiskData[]>(
+      `/api/risks?${queryParams}`
+    );
+    return response.data;
   }
 
   async getUserContext(userId: string): Promise<{ name: string; id: string }> {
-    return this.makeRequest<{ name: string; id: string }>(
+    const response = await this.makeRequest<{ name: string; id: string }>(
       `/api/users/${userId}/context`
     );
+    return response.data;
   }
 
   async sendNotification(
     itemId: string,
     userId: string
   ): Promise<{ success: boolean }> {
-    return this.makeRequest<{ success: boolean }>(`/api/notifications`, {
-      method: "POST",
-      body: JSON.stringify({
-        itemId,
-        userId,
-        type: "risk_reminder",
-      }),
-    });
+    const response = await this.makeRequest<{ success: boolean }>(
+      `/api/notifications`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          itemId,
+          userId,
+          type: "risk_reminder",
+        }),
+      }
+    );
+    return response.data;
   }
 
   async updateItemSelection(
@@ -75,7 +83,7 @@ class CentralOEService {
     selected: boolean,
     userId: string
   ): Promise<{ success: boolean }> {
-    return this.makeRequest<{ success: boolean }>(
+    const response = await this.makeRequest<{ success: boolean }>(
       `/api/items/${itemId}/selection`,
       {
         method: "PUT",
@@ -85,6 +93,7 @@ class CentralOEService {
         }),
       }
     );
+    return response.data;
   }
 
   async getRiskStatistics(viewMode: ViewMode): Promise<{
@@ -93,12 +102,13 @@ class CentralOEService {
     completedItems: number;
     averageScore: number;
   }> {
-    return this.makeRequest<{
+    const response = await this.makeRequest<{
       totalItems: number;
       overdueItems: number;
       completedItems: number;
       averageScore: number;
     }>(`/api/statistics?viewMode=${viewMode}`);
+    return response.data;
   }
 }
 
@@ -108,106 +118,106 @@ export const centralOEService = new CentralOEService();
 // Mock data for development/testing
 export const mockRiskData: RiskData[] = [
   {
-    id: "shepherd",
-    name: "Shepherd risks",
+    id: "high-risk",
+    name: "High Priority Risks",
     percentage: 40,
     score: 88,
     items: [
       {
         id: "1",
-        title: "Andes Tagging for DMA in-scope datasets identified via PDC",
-        owner: "Kota",
-        assignee: "sssram",
+        title: "Data Classification for Customer Datasets",
+        owner: "Risk Manager",
+        assignee: "Data Analyst",
         dueIn: 15,
-        link: "https://example.com/andes-tagging",
+        link: "https://example.com/data-classification",
         status: "active",
       },
       {
         id: "2",
-        title: "TransitiveAuth Onboarding for non-Java Initiators",
-        owner: "Raymonm",
-        assignee: "psmanish",
+        title: "Authentication System for External Users",
+        owner: "Security Lead",
+        assignee: "DevOps Engineer",
         dueIn: 26,
-        link: "https://example.com/transitive-auth",
+        link: "https://example.com/auth-system",
         status: "active",
       },
       {
         id: "3",
-        title: "Perimeter Security: Security Group Exposure Violates Policy",
-        owner: "Raymonm",
-        assignee: "psmanish",
+        title: "Network Security: Firewall Configuration Review",
+        owner: "Security Lead",
+        assignee: "Network Admin",
         dueIn: 26,
-        link: "https://example.com/perimeter-security",
+        link: "https://example.com/network-security",
         status: "active",
       },
     ],
   },
   {
-    id: "pe",
-    name: "PE",
+    id: "medium-risk",
+    name: "Medium Priority Risks",
     percentage: 35,
     score: 65,
     items: [
       {
         id: "4",
-        title: "Aquila Maestro Datapipeline Dev",
-        owner: "Kota",
-        assignee: "sssram",
+        title: "Data Pipeline Development Standards",
+        owner: "Data Engineer",
+        assignee: "DevOps Engineer",
         dueIn: 15,
-        link: "https://example.com/aquila-maestro",
+        link: "https://example.com/data-pipeline",
         status: "active",
       },
       {
         id: "5",
-        title: "TransitiveAuth Onboarding for non-Java Initiators",
-        owner: "Raymonm",
-        assignee: "psmanish",
+        title: "API Security for Third-party Integrations",
+        owner: "Security Lead",
+        assignee: "Backend Developer",
         dueIn: 26,
-        link: "https://example.com/transitive-auth-pe",
+        link: "https://example.com/api-security",
         status: "active",
       },
       {
         id: "6",
-        title: "Perimeter Security: Security Group Exposure Violates Policy",
-        owner: "Raymonm",
-        assignee: "psmanish",
+        title: "Access Control: User Permission Review",
+        owner: "Security Lead",
+        assignee: "System Admin",
         dueIn: 26,
-        link: "https://example.com/perimeter-security-pe",
+        link: "https://example.com/access-control",
         status: "active",
       },
     ],
   },
   {
-    id: "sas",
-    name: "SAS",
+    id: "low-risk",
+    name: "Low Priority Risks",
     percentage: 25,
     score: 45,
     items: [
       {
         id: "7",
-        title: "EDXClient/rsirasal:Beta",
-        owner: "Kota",
-        assignee: "sssram",
+        title: "Client Application Beta Testing",
+        owner: "Product Manager",
+        assignee: "QA Engineer",
         dueIn: 15,
-        link: "https://example.com/edxclient",
+        link: "https://example.com/client-testing",
         status: "active",
       },
       {
         id: "8",
-        title: "TransitiveAuth Onboarding for non-Java Initiators",
-        owner: "Raymonm",
-        assignee: "psmanish",
+        title: "Database Backup and Recovery Testing",
+        owner: "DBA",
+        assignee: "DevOps Engineer",
         dueIn: 26,
-        link: "https://example.com/transitive-auth-sas",
+        link: "https://example.com/backup-testing",
         status: "active",
       },
       {
         id: "9",
-        title: "Perimeter Security: Security Group Exposure Violates Policy",
-        owner: "Raymonm",
-        assignee: "psmanish",
+        title: "Logging and Monitoring Setup",
+        owner: "DevOps Lead",
+        assignee: "SRE Engineer",
         dueIn: 26,
-        link: "https://example.com/perimeter-security-sas",
+        link: "https://example.com/logging-monitoring",
         status: "active",
       },
     ],

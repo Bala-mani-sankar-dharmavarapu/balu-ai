@@ -1,3 +1,4 @@
 export { default as KaleReviewDashboard } from "./KaleReviewDashboard";
-export * from "./types";
-export * from "./services";
+export { default as SearchSection } from "./SearchSection";
+export { default as TableInformationSection } from "./TableInformationSection";
+export { default as TargetSystemsSection } from "./TargetSystemsSection";
