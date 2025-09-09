@@ -116,7 +116,7 @@ const RCSChat: React.FC = () => {
             </Typography>
 
             {/* RCS Query Functionalities Section */}
-            <QueryList setInput={setInput} />
+            <QueryList setInput={sendMessage} />
             {/* Quick Prompts */}
             {/* <Prompts sendMessage={sendMessage} /> */}
           </Box>
