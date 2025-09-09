@@ -58,16 +58,6 @@ a,
   background: linear-gradient(135deg, #e47911 0%, #d2691e 100%);
 }
 
-/* Selection Colors */
-::selection {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 153, 0, 0.2) 0%,
-    rgba(228, 121, 17, 0.2) 100%
-  );
-  color: #0f1111;
-}
-
 /* Modern Button Styles */
 button {
   border: none;
