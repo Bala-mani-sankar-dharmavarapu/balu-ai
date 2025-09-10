@@ -61,7 +61,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               ? "none"
               : `1px solid ${theme.palette.divider}`,
           position: "relative",
-          overflow: "visible", // Allow content to extend beyond container
+          overflow: "hidden", // Prevent content from extending beyond container
           maxHeight: "500px", // Reasonable height limit for good UX
           "&::before":
             message.sender === "other"

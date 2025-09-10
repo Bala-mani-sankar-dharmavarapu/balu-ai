@@ -89,7 +89,26 @@ const MessageContent: React.FC<MessageContentProps> = ({ message }) => {
     const hasTable = sanitizedHTML.includes("<table");
 
     return (
-      <Box>
+      <Box
+        sx={{
+          maxHeight: "400px", // Limit height for entire content
+          overflow: "auto", // Enable scrolling for entire content
+          "&::-webkit-scrollbar": {
+            width: 8,
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: theme.palette.grey[100],
+            borderRadius: 4,
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: theme.palette.grey[400],
+            borderRadius: 4,
+            "&:hover": {
+              backgroundColor: theme.palette.grey[600],
+            },
+          },
+        }}
+      >
         {/* Show plain text if available */}
         {message.plain_text && (
           <Typography
@@ -98,6 +117,7 @@ const MessageContent: React.FC<MessageContentProps> = ({ message }) => {
               fontSize: "0.9rem",
               lineHeight: 1.4,
               wordBreak: "break-word",
+              whiteSpace: "pre-wrap", // Preserve newlines and wrap text
               mb: 1,
             }}
           >
@@ -111,23 +131,6 @@ const MessageContent: React.FC<MessageContentProps> = ({ message }) => {
             lineHeight: 1.4,
             wordBreak: "break-word",
             width: "100%",
-            maxHeight: "300px", // Fixed height for consistent UX
-            overflow: "auto", // Enable scrolling for both horizontal and vertical
-            "&::-webkit-scrollbar": {
-              height: 8,
-              width: 8,
-            },
-            "&::-webkit-scrollbar-track": {
-              backgroundColor: theme.palette.grey[100],
-              borderRadius: 4,
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: theme.palette.grey[400],
-              borderRadius: 4,
-              "&:hover": {
-                backgroundColor: theme.palette.grey[600],
-              },
-            },
             "& table": {
               width: "max-content", // Let table take its natural width
               minWidth: "100%", // But at least full width
@@ -328,16 +331,38 @@ const MessageContent: React.FC<MessageContentProps> = ({ message }) => {
 
   // Fallback to plain text
   return (
-    <Typography
-      variant="body1"
+    <Box
       sx={{
-        fontSize: "0.9rem",
-        lineHeight: 1.4,
-        wordBreak: "break-word",
+        maxHeight: "400px", // Limit height for long text
+        overflow: "auto", // Enable scrolling
+        "&::-webkit-scrollbar": {
+          width: 6,
+        },
+        "&::-webkit-scrollbar-track": {
+          backgroundColor: theme.palette.grey[100],
+          borderRadius: 3,
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: theme.palette.grey[400],
+          borderRadius: 3,
+          "&:hover": {
+            backgroundColor: theme.palette.grey[600],
+          },
+        },
       }}
     >
-      {message.plain_text || message.text}
-    </Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          fontSize: "0.9rem",
+          lineHeight: 1.4,
+          wordBreak: "break-word",
+          whiteSpace: "pre-wrap", // Preserve newlines and wrap text
+        }}
+      >
+        {message.plain_text || message.text}
+      </Typography>
+    </Box>
   );
 };
 
