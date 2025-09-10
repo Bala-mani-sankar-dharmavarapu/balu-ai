@@ -165,6 +165,21 @@ const ChatSection: React.FC = () => {
                   color: "info",
                   query: "Help me debug this code",
                 },
+                {
+                  id: "documentation",
+                  title: "Documentation Help",
+                  description: "Get help with documentation and writing",
+                  example: "Help me write documentation",
+                  examples: [
+                    "Help me write documentation",
+                    "Create a README for my project",
+                    "Write technical specifications",
+                    "Generate API documentation",
+                  ],
+                  icon: "📚",
+                  color: "warning",
+                  query: "Help me write documentation",
+                },
               ]}
               cardWidth={140}
             />

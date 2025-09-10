@@ -81,6 +81,21 @@ const defaultFunctions: RCSFunction[] = [
     color: "error",
     query: "What are the recent job failures?",
   },
+  {
+    id: "system-health",
+    title: "System Health Check",
+    description: "Monitor system performance and health metrics",
+    example: "Check the system health status",
+    examples: [
+      "Check the system health status",
+      "Show me current system performance metrics",
+      "What is the overall system health?",
+      "Display system resource utilization",
+    ],
+    icon: "💚",
+    color: "success",
+    query: "Check the system health status",
+  },
 ];
 
 const QueryList: React.FC<QueryListProps> = ({
@@ -147,11 +162,11 @@ const QueryList: React.FC<QueryListProps> = ({
 
       <Box
         sx={{
-          display: "flex",
-          gap,
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: 2,
           maxWidth: "100%",
           mx: "auto",
-          flexWrap: "nowrap",
           justifyContent: "center",
         }}
       >
