@@ -1,31 +1,17 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  IconButton,
-  InputBase,
-  useTheme,
-  Fade,
-} from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
+import { Box } from "@mui/material";
 import Chat from "./Chat";
+import WelcomeSection from "./WelcomeSection";
+import MessageInput from "./MessageInput";
+import StatusIndicator from "./StatusIndicator";
 import { v4 as uuidv4 } from "uuid";
-import QueryList from "../common/QueryList";
-
-interface Message {
-  id: number;
-  sender: "user" | "other";
-  text: string;
-  time: string;
-}
+import type { Message, ApiResponse } from "./types";
 
 const ChatSection: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState("");
-  const theme = useTheme();
 
   const sendMessage = (prompt = "") => {
     const query = prompt || input;
@@ -49,12 +35,24 @@ const ChatSection: React.FC = () => {
     setInput("");
     setLoading(true);
 
-    // Simulate dummy reply
+    // Simulate API call that returns both plain_text and html_text
     setTimeout(() => {
+      // This simulates the API response format
+      const apiResponse: ApiResponse = {
+        plain_text: `Here's the transaction data you requested:
+        Here's the transaction data you requested:
+        Here's the transaction data you requested:
+        Here's the transaction data you requested:
+        `,
+        html_text,
+      };
+
       const reply: Message = {
         id: Date.now() + 1,
         sender: "other",
-        text: "This is a dummy reply for testing the modern UI. I'm here to help you with any questions or tasks you might have!",
+        text: apiResponse.plain_text, // Keep text for backward compatibility
+        plain_text: apiResponse.plain_text,
+        html_text: apiResponse.html_text,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -76,115 +74,7 @@ const ChatSection: React.FC = () => {
     >
       {/* Header shown only if no messages */}
       {messages.length === 0 && !loading && (
-        <Fade in={true} timeout={800}>
-          <Box
-            sx={{
-              textAlign: "center",
-              py: 3,
-              px: 2,
-              maxWidth: 600,
-              mx: "auto",
-              width: "100%",
-            }}
-          >
-            {/* Welcome Message */}
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 700,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                mb: 1,
-                fontSize: { xs: "1.75rem", md: "2rem" },
-              }}
-            >
-              Hello Sriram! 👋
-            </Typography>
-
-            <Typography
-              variant="h6"
-              sx={{
-                color: theme.palette.text.secondary,
-                fontWeight: 500,
-                mb: 2.5,
-                fontSize: "1rem",
-                lineHeight: 1.4,
-              }}
-            >
-              I'm your AI assistant. How can I help you today?
-            </Typography>
-
-            {/* Quick Prompts */}
-            <QueryList
-              setInput={sendMessage}
-              title="Quick Starters"
-              functions={[
-                {
-                  id: "general-help",
-                  title: "General Help",
-                  description: "Get help with general questions and tasks",
-                  example: "How can you help me today?",
-                  examples: [
-                    "How can you help me today?",
-                    "What can you do for me?",
-                    "Show me your capabilities",
-                    "What are your main features?",
-                  ],
-                  icon: "🤖",
-                  color: "primary",
-                  query: "How can you help me today?",
-                },
-                {
-                  id: "data-analysis",
-                  title: "Data Analysis",
-                  description: "Analyze data and create visualizations",
-                  example: "Help me analyze this dataset",
-                  examples: [
-                    "Help me analyze this dataset",
-                    "Create a visualization for this data",
-                    "What insights can you find in this data?",
-                    "Generate a report from this dataset",
-                  ],
-                  icon: "📈",
-                  color: "secondary",
-                  query: "Help me analyze this dataset",
-                },
-                {
-                  id: "code-assistance",
-                  title: "Code Assistance",
-                  description: "Get help with programming and debugging",
-                  example: "Help me debug this code",
-                  examples: [
-                    "Help me debug this code",
-                    "Review my code for best practices",
-                    "Optimize this function for better performance",
-                    "Explain how this algorithm works",
-                  ],
-                  icon: "💻",
-                  color: "info",
-                  query: "Help me debug this code",
-                },
-                {
-                  id: "documentation",
-                  title: "Documentation Help",
-                  description: "Get help with documentation and writing",
-                  example: "Help me write documentation",
-                  examples: [
-                    "Help me write documentation",
-                    "Create a README for my project",
-                    "Write technical specifications",
-                    "Generate API documentation",
-                  ],
-                  icon: "📚",
-                  color: "warning",
-                  query: "Help me write documentation",
-                },
-              ]}
-              cardWidth={140}
-            />
-          </Box>
-        </Fade>
+        <WelcomeSection onSendMessage={sendMessage} />
       )}
 
       {/* Chat messages */}
@@ -193,113 +83,397 @@ const ChatSection: React.FC = () => {
       </Box>
 
       {/* Input section fixed at bottom */}
-      <Box
-        sx={{
-          p: 2,
-          borderTop: `1px solid ${theme.palette.divider}`,
-          backgroundColor: theme.palette.background.paper,
-        }}
-      >
-        <Paper
-          component="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          sx={{
-            p: "4px 8px",
-            display: "flex",
-            alignItems: "center",
-            borderRadius: 3,
-            maxWidth: 800,
-            mx: "auto",
-            backgroundColor: theme.palette.background.default,
-            border: `1px solid ${theme.palette.divider}`,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-            transition: "all 0.2s ease-in-out",
-            "&:hover": {
-              boxShadow: "0 6px 25px rgba(0,0,0,0.12)",
-              borderColor: theme.palette.primary.main + "40",
-            },
-            "&:focus-within": {
-              boxShadow: `0 0 0 3px ${theme.palette.primary.main}20`,
-              borderColor: theme.palette.primary.main,
-            },
-          }}
-        >
-          <InputBase
-            sx={{
-              ml: 2,
-              flex: 1,
-              fontSize: "0.95rem",
-              color: theme.palette.text.primary,
-              "& input::placeholder": {
-                color: theme.palette.text.secondary,
-                opacity: 0.7,
-              },
-            }}
-            placeholder="Ask me anything..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={loading}
-            multiline
-            maxRows={3}
-          />
-          <IconButton
-            color="primary"
-            type="submit"
-            sx={{
-              p: "10px",
-              backgroundColor: theme.palette.primary.main,
-              color: "white",
-              "&:hover": {
-                backgroundColor: theme.palette.primary.dark,
-                transform: "scale(1.05)",
-              },
-              "&:disabled": {
-                backgroundColor: theme.palette.action.disabled,
-                transform: "none",
-              },
-              transition: "all 0.2s ease-in-out",
-            }}
-            disabled={loading || !input.trim()}
-          >
-            <SendIcon />
-          </IconButton>
-        </Paper>
+      <MessageInput
+        input={input}
+        setInput={setInput}
+        onSendMessage={sendMessage}
+        loading={loading}
+      />
 
-        {/* Status indicator */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 1,
-            mt: 1.5,
-          }}
-        >
-          <Box
-            sx={{
-              width: 5,
-              height: 5,
-              borderRadius: "50%",
-              backgroundColor: theme.palette.success.main,
-              animation: "pulse 2s infinite",
-            }}
-          />
-          <Typography
-            variant="caption"
-            sx={{
-              color: theme.palette.text.secondary,
-              fontSize: "0.7rem",
-            }}
-          >
-            AI Assistant is ready to help
-          </Typography>
-        </Box>
-      </Box>
+      {/* Status indicator */}
+      <StatusIndicator />
     </Box>
   );
 };
 
 export default ChatSection;
+
+const html_text = `<style type="text/css">
+#T_da5e2_row0_col0, #T_da5e2_row0_col1, #T_da5e2_row0_col2, #T_da5e2_row0_col3, #T_da5e2_row0_col4, #T_da5e2_row0_col5, #T_da5e2_row0_col6, #T_da5e2_row0_col7, #T_da5e2_row0_col8, #T_da5e2_row0_col9, #T_da5e2_row0_col10, #T_da5e2_row0_col11, #T_da5e2_row0_col12, #T_da5e2_row0_col13, #T_da5e2_row0_col14, #T_da5e2_row0_col15, #T_da5e2_row0_col16, #T_da5e2_row0_col17, #T_da5e2_row0_col18, #T_da5e2_row0_col19, #T_da5e2_row0_col20 {
+ background-color: #f2f2f2;
+ border: 1px solid black;
+}
+</style>
+<table id="T_da5e2">
+ <thead>
+ <tr>
+ <th id="T_da5e2_level0_col0" class="col_heading level0 col0" >sor</th>
+ <th id="T_da5e2_level0_col1" class="col_heading level0 col1" >transaction id number</th>
+ <th id="T_da5e2_level0_col2" class="col_heading level0 col2" >transaction_date</th>
+ <th id="T_da5e2_level0_col3" class="col_heading level0 col3" >transaction time</th>
+ <th id="T_da5e2_level0_col4" class="col_heading level0 col4" >acquirer</th>
+ <th id="T_da5e2_level0_col5" class="col_heading level0 col5" >transaction category</th>
+ <th id="T_da5e2_level0_col6" class="col_heading level0 col6" >transaction type</th>
+ <th id="T_da5e2_level0_col7" class="col_heading level0 col7" >amount</th>
+ <th id="T_da5e2_level0_col8" class="col_heading level0 col8" >transaction fee or commission</th>
+ <th id="T_da5e2_level0_col9" class="col_heading level0 col9" >transaction total</th>
+ <th id="T_da5e2_level0_col10" class="col_heading level0 col10" >sender_name</th>
+ <th id="T_da5e2_level0_col11" class="col_heading level0 col11" >sender_address</th>
+ <th id="T_da5e2_level0_col12" class="col_heading level0 col12" >sender_city_state</th>
+ <th id="T_da5e2_level0_col13" class="col_heading level0 col13" >sender_telephone</th>
+ <th id="T_da5e2_level0_col14" class="col_heading level0 col14" >recepient_name</th>
+ <th id="T_da5e2_level0_col15" class="col_heading level0 col15" >recepient_address</th>
+ <th id="T_da5e2_level0_col16" class="col_heading level0 col16" >recepient_city_state</th>
+ <th id="T_da5e2_level0_col17" class="col_heading level0 col17" >recepient_telephone</th>
+ <th id="T_da5e2_level0_col18" class="col_heading level0 col18" >location of transaction</th>
+ <th id="T_da5e2_level0_col19" class="col_heading level0 col19" >agent's name</th>
+ <th id="T_da5e2_level0_col20" class="col_heading level0 col20" >agent's address</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr><tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ <tr>
+ <td id="T_da5e2_row0_col0" class="data row0 col0" >NY</td>
+ <td id="T_da5e2_row0_col1" class="data row0 col1" >Escheatment</td>
+ <td id="T_da5e2_row0_col2" class="data row0 col2" >2024-08-29</td>
+ <td id="T_da5e2_row0_col3" class="data row0 col3" >2024-08-29 23:36:32</td>
+ <td id="T_da5e2_row0_col4" class="data row0 col4" >BalanceAdj</td>
+ <td id="T_da5e2_row0_col5" class="data row0 col5" >Escheatment</td>
+ <td id="T_da5e2_row0_col6" class="data row0 col6" >Debit</td>
+ <td id="T_da5e2_row0_col7" class="data row0 col7" >-1100.000000</td>
+ <td id="T_da5e2_row0_col8" class="data row0 col8" >0</td>
+ <td id="T_da5e2_row0_col9" class="data row0 col9" >-1100.000000</td>
+ <td id="T_da5e2_row0_col10" class="data row0 col10" >None</td>
+ <td id="T_da5e2_row0_col11" class="data row0 col11" > </td>
+ <td id="T_da5e2_row0_col12" class="data row0 col12" >BROOKLYN NY</td>
+ <td id="T_da5e2_row0_col13" class="data row0 col13" >None</td>
+ <td id="T_da5e2_row0_col14" class="data row0 col14" >Amazon.com</td>
+ <td id="T_da5e2_row0_col15" class="data row0 col15" >410 Terry Ave N. SEATTLE WA</td>
+ <td id="T_da5e2_row0_col16" class="data row0 col16" >SEATTLE WA</td>
+ <td id="T_da5e2_row0_col17" class="data row0 col17" >2062661000</td>
+ <td id="T_da5e2_row0_col18" class="data row0 col18" >Internet</td>
+ <td id="T_da5e2_row0_col19" class="data row0 col19" >None</td>
+ <td id="T_da5e2_row0_col20" class="data row0 col20" >None</td>
+ </tr>
+ </tbody>
+</table>`;

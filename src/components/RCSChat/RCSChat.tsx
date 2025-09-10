@@ -1,31 +1,94 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  IconButton,
-  InputBase,
-  useTheme,
-  Fade,
-} from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
+import { Box, Typography, useTheme, Fade } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import Chat from "../Chat/Chat";
+import MessageInput from "../Chat/MessageInput";
+import StatusIndicator from "../Chat/StatusIndicator";
 import QueryList from "../common/QueryList";
+import type { AgentResponse, Message } from "../Chat/types";
 
-interface Message {
-  id: number;
-  sender: "user" | "other";
-  text: string;
-  time: string;
-}
+// RCS-specific welcome section component
+const RCSWelcomeSection: React.FC<{
+  onSendMessage: (message: string) => void;
+}> = ({ onSendMessage }) => {
+  const theme = useTheme();
+
+  // Define response type
+
+  // Format function
+  const formatResponse = (
+    response: AgentResponse
+  ): { plain_text: string; html_text: string } => {
+    let plain_text = "";
+    let html_text = "";
+
+    if (!response.function_call) {
+      plain_text = response.simple_agent_response || "";
+    } else {
+      plain_text =
+        response.function_response?.sql_query ||
+        response.function_response?.analysis ||
+        "";
+
+      html_text = response.function_response?.html_response || "";
+      plain_text = response.function_response?.plain_text || plain_text;
+    }
+
+    return { plain_text, html_text };
+  };
+
+  return (
+    <Fade in={true} timeout={800}>
+      <Box
+        sx={{
+          textAlign: "center",
+          py: 3,
+          px: 2,
+          maxWidth: 600,
+          mx: "auto",
+          width: "100%",
+        }}
+      >
+        {/* Welcome Message */}
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            mb: 1,
+            fontSize: { xs: "1.75rem", md: "2rem" },
+          }}
+        >
+          Hello Sriram! 👋
+        </Typography>
+
+        <Typography
+          variant="h6"
+          sx={{
+            color: theme.palette.text.secondary,
+            fontWeight: 500,
+            mb: 2.5,
+            fontSize: "1rem",
+            lineHeight: 1.4,
+          }}
+        >
+          I'm your RCS assistant. How can I help you today?
+        </Typography>
+
+        {/* RCS Query Functionalities Section */}
+        <QueryList setInput={onSendMessage} />
+      </Box>
+    </Fade>
+  );
+};
 
 const RCSChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState("");
-  const theme = useTheme();
 
   const sendMessage = (prompt = "") => {
     const query = prompt || input;
@@ -76,164 +139,24 @@ const RCSChat: React.FC = () => {
     >
       {/* Header shown only if no messages */}
       {messages.length === 0 && !loading && (
-        <Fade in={true} timeout={800}>
-          <Box
-            sx={{
-              textAlign: "center",
-              py: 3,
-              px: 2,
-              maxWidth: 600,
-              mx: "auto",
-              width: "100%",
-            }}
-          >
-            {/* Welcome Message */}
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 700,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                mb: 1,
-                fontSize: { xs: "1.75rem", md: "2rem" },
-              }}
-            >
-              Hello Sriram! 👋
-            </Typography>
-
-            <Typography
-              variant="h6"
-              sx={{
-                color: theme.palette.text.secondary,
-                fontWeight: 500,
-                mb: 2.5,
-                fontSize: "1rem",
-                lineHeight: 1.4,
-              }}
-            >
-              I'm your RCS assistant. How can I help you today?
-            </Typography>
-
-            {/* RCS Query Functionalities Section */}
-            <QueryList setInput={sendMessage} />
-            {/* Quick Prompts */}
-            {/* <Prompts sendMessage={sendMessage} /> */}
-          </Box>
-        </Fade>
+        <RCSWelcomeSection onSendMessage={sendMessage} />
       )}
 
       {/* Chat messages */}
-      <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
+      <Box sx={{ flexGrow: 1, overflow: "auto" }}>
         <Chat messages={messages} loading={loading} />
       </Box>
 
       {/* Input section fixed at bottom */}
-      <Box
-        sx={{
-          p: 2,
-          borderTop: `1px solid ${theme.palette.divider}`,
-          backgroundColor: theme.palette.background.paper,
-        }}
-      >
-        <Paper
-          component="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          sx={{
-            p: "4px 8px",
-            display: "flex",
-            alignItems: "center",
-            borderRadius: 3,
-            maxWidth: 800,
-            mx: "auto",
-            backgroundColor: theme.palette.background.default,
-            border: `1px solid ${theme.palette.divider}`,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-            transition: "all 0.2s ease-in-out",
-            "&:hover": {
-              boxShadow: "0 6px 25px rgba(0,0,0,0.12)",
-              borderColor: theme.palette.primary.main + "40",
-            },
-            "&:focus-within": {
-              boxShadow: `0 0 0 3px ${theme.palette.primary.main}20`,
-              borderColor: theme.palette.primary.main,
-            },
-          }}
-        >
-          <InputBase
-            sx={{
-              ml: 2,
-              flex: 1,
-              fontSize: "0.95rem",
-              color: theme.palette.text.primary,
-              "& input::placeholder": {
-                color: theme.palette.text.secondary,
-                opacity: 0.7,
-              },
-            }}
-            placeholder="Ask me anything..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={loading}
-            multiline
-            maxRows={3}
-          />
-          <IconButton
-            color="primary"
-            type="submit"
-            sx={{
-              p: "10px",
-              backgroundColor: theme.palette.primary.main,
-              color: "white",
-              "&:hover": {
-                backgroundColor: theme.palette.primary.dark,
-                transform: "scale(1.05)",
-              },
-              "&:disabled": {
-                backgroundColor: theme.palette.action.disabled,
-                transform: "none",
-              },
-              transition: "all 0.2s ease-in-out",
-            }}
-            disabled={loading || !input.trim()}
-          >
-            <SendIcon />
-          </IconButton>
-        </Paper>
+      <MessageInput
+        input={input}
+        setInput={setInput}
+        onSendMessage={sendMessage}
+        loading={loading}
+      />
 
-        {/* Status indicator */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 1,
-            mt: 1.5,
-          }}
-        >
-          <Box
-            sx={{
-              width: 5,
-              height: 5,
-              borderRadius: "50%",
-              backgroundColor: theme.palette.success.main,
-              animation: "pulse 2s infinite",
-            }}
-          />
-          <Typography
-            variant="caption"
-            sx={{
-              color: theme.palette.text.secondary,
-              fontSize: "0.7rem",
-            }}
-          >
-            AI Assistant is ready to help
-          </Typography>
-        </Box>
-      </Box>
+      {/* Status indicator */}
+      <StatusIndicator />
     </Box>
   );
 };
